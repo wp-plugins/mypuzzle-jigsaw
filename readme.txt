@@ -23,7 +23,7 @@ Major features in this version include:
 * show or hide the preview for the puzzle result image
 
 
-For more details and examples visit the plugin page on <a href="http://mypuzzle.com/jigsaw/wordpress.html">Wordpress Jigsaw Plugin</a>
+For more details and examples visit the plugin page on <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugin</a>
 
 == Installation ==
 
