@@ -17,8 +17,11 @@ class jigsaw_mp_jigsaw
             $loadDir = plugins_url('img/', __FILE__);
         else
             $loadDir = '';
-        //$uploadDir = plugins_url('img/', __FILE__);
         $uploadDir = wp_upload_dir();
+        $uplDir = $uploadDir['path'].'/';
+        $dwnDir = $uploadDir['url'].'/';        
+        //$uploadDir = plugins_url('img/', __FILE__);
+        //$uploadDir = wp_upload_dir();
         $image->load($loadDir.$inputImage);
         //get sizes
         $height = $image->getHeight();
@@ -30,9 +33,9 @@ class jigsaw_mp_jigsaw
         if ($isurl)
             $file_name = $myimage_filename;
         else
-            $file_name = $inputImage.'.'.$extension;
-        $image->save($uploadDir.$file_name);
-        return($uploadDir.$file_name);
+            $file_name = $inputImage;
+        $image->save($uplDir.$file_name);
+        return($dwnDir.$file_name);
 
     }
 
