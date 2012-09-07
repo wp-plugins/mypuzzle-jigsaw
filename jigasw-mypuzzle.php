@@ -59,17 +59,28 @@ function get_jigsaw_mp_options ($default = false){
  
 add_shortcode('jigsaw-mp', 'jigsaw_mp');
 
+function jigsaw_mp_testRange($int,$min,$max) {     
+    return ($int>=$min && $int<=$max);
+}
+
 function jigsaw_mp($atts) {
 	global $post;
 	$options = get_jigsaw_mp_options();	
 	
 	$size = $options['size'];
+        if (!is_numeric($size) || !jigsaw_mp_testRange(intval($size),100,1000)) {$size=300;}
 	$pieces = $options['pieces'];
+        if (!is_numeric($pieces) || !jigsaw_mp_testRange(intval($pieces),2,20)) {$pieces=3;}
         $rotation = $options['rotation'];
+        if (!is_numeric($rotation) || !jigsaw_mp_testRange(intval($rotation),0,1)) {$rotation=1;}
         $preview = $options['preview'];
+        if (!is_numeric($preview) || !jigsaw_mp_testRange(intval($preview),0,1)) {$preview=1;}
         $bgcolor = $options['bgcolor'];
+        $bgcolor = str_replace('#', '$preview', $bgcolor);
+        if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
         $showlink = $options['showlink'];
+        if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
 
 	extract(shortcode_atts(array(
                 'size' => $size,
@@ -92,6 +103,9 @@ function jigsaw_mp($atts) {
         }
         else
             $myPic = $myJigsaw->getResizedImage($image, false);
+        //check whether given url was an valid image url
+        if (!$myPic) return("Error: Url for <strong>'myimage={$myimage}'</strong> is not an image I can not load! Please change settings.");
+        
         $width = $size*1.4;
         $heigth = $size;
         //$myPic = plugins_url('img/', __FILE__).'slide-5x5.jpg';
@@ -106,8 +120,8 @@ function jigsaw_mp($atts) {
 	$output .= "<param name='flashvars' value='myThumbnail=" . $preview . "&myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' />\r";
 	$output .= "<param name='quality' value='high' />\r";
 	$output .= "<param name='menu' value='false' />\r";
-	$output .= "<param name='bgcolor' value='".$bgcolor."' />\r";
-	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' quality='high' bgcolor='".$bgcolor."'  swLiveConnect='true' ";
+	$output .= "<param name='bgcolor' value='#".$bgcolor."' />\r";
+	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
@@ -179,7 +193,7 @@ function jigsaw_mp_options_page() {
                     <input style="width: 150px" type="text" name="size" value="<?php echo ($size); ?>">
                     
                 </td>
-                <td width="500"></td>
+                <td width="500">Try 300 then you are not sure.</td>
             </tr>
             <tr>
                 <td width="50">
@@ -230,7 +244,7 @@ function jigsaw_mp_options_page() {
                 <td>
                     <input style="width: 150px" type="text" name="bgcolor" value="<?php echo ($bgcolor); ?>">
                 </td>
-                <td width="200"></td>
+                <td width="200">Like #FFFFFF for white.</td>
             </tr>
             <tr>
                 <td width="100">

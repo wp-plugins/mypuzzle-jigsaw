@@ -22,6 +22,9 @@ class jigsaw_mp_jigsaw
         $dwnDir = $uploadDir['url'].'/';        
         //$uploadDir = plugins_url('img/', __FILE__);
         //$uploadDir = wp_upload_dir();
+        
+        if (!$image->isImage($loadDir.$inputImage)) return(false);
+        
         $image->load($loadDir.$inputImage);
         //get sizes
         $height = $image->getHeight();
@@ -68,6 +71,30 @@ class jigsaw_mp_simpleImage {
  
          $this->image = imagecreatefrompng($filename);
       }
+   }
+   function isImage($url) {
+        $params = array('http' => array('method' => 'HEAD'));
+        $ctx = stream_context_create($params);
+        $fp = @fopen($url, 'rb', false, $ctx);
+        if (!$fp)
+            return false;  // Problem with url      
+        $meta = stream_get_meta_data($fp);     
+        if ($meta === false) {         
+            fclose($fp);         
+            return false;  // Problem reading data from url     
+        }      
+        $wrapper_data = $meta["wrapper_data"];     
+        if(is_array($wrapper_data)) {       
+            foreach(array_keys($wrapper_data) as $hh) {           
+                if (substr($wrapper_data[$hh], 0, 19) == "Content-Type: image") // strlen("Content-Type: image") == 19            
+                {             
+                    fclose($fp);             
+                    return true;           
+                }       
+            }     
+        }      
+        fclose($fp);     
+        return false;
    }
    function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
  
