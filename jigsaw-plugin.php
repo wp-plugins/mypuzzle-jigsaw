@@ -96,7 +96,7 @@ class jigsaw_mp_simpleImage {
         fclose($fp);     
         return false;
    }
-   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
+   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=100, $permissions=null) {
  
       if( $image_type == IMAGETYPE_JPEG ) {
          imagejpeg($this->image,$filename,$compression);
