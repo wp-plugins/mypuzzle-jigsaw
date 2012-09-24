@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: jigsaw, mypuzzle, puzzle, jigsaw puzzle, puzzle games, free jigsaw puzzle
 Requires at least: 2.5
 Tested up to: 3.4.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,7 @@ For more details and examples visit the plugin page on <a href="http://mypuzzle.
 1. Upload 'Jigsaw Mypuzzle' folder to the '/wp-content/plugins/' directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to the MyPuzzle Jigsaw Options page under settings and save your prefered options.
-4. Use the Jigsaw code "[jigsaw-mp]" plus option to insert jigsaw puzzles into your posts/pages.
+4. Use the Jigsaw code [jigsaw-mp] plus option to insert jigsaw puzzles into your posts/pages.
 
 The <a href="http://mypuzzle.org/jigsaw/">jigsaw puzzles</a> are provided by mypuzzle.org.
 
@@ -41,6 +41,8 @@ Examples:
 - [jigsaw-mp]
 - [jigsaw-mp size=300 pieces=4 rotation=1 preview=1 bgcolor='#ffffff' myimage='']
 - [jigsaw-mp size=400 pieces=3 rotation=1 preview=0 bgcolor='#f4f4f4' myimage='' myimage='http://mysite.domain/img_folder/example.jpg']
+- [jigsaw-mp gallery='wp-content/uploads/myimages']
+- Or any combination of the above
 
 Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugin</a>
 
@@ -53,3 +55,7 @@ Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugi
  = 1.0.0 =  
  * Initial release.
 
+ = 1.1.0 =  
+ * Fixed some upload path handlings and preview-setting not being saved
+ * Added MyPuzzle Image Gallery to choose from a variety of images
+ * Added Option to link your own image path as gallery input

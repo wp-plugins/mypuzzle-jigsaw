@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.0.0
+Version: 1.1.0
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -33,13 +33,16 @@ include_once("jigsaw-plugin.php");
  */
 function get_jigsaw_mp_options ($default = false){
 	$shc_default = array(
-            'size' => '400',
-            'pieces' => '3',
+            'size' => '460',
+            'pieces' => '4',
             'rotation' => '1',
             'preview' => '1',
             'bgcolor' => '#ffffff',
             'myimage' => '',
-            'showlink' => '0'
+            'gallery' => 'wp-content/plugins/mypuzzle-jigsaw/gallery/',
+            'temppath' => '',
+            'showlink' => '0',
+            'doresize' => '0'
             );
 	if ($default) {
 		update_option('shc_op', $shc_default);
@@ -56,8 +59,25 @@ function get_jigsaw_mp_options ($default = false){
 /**
  * The Sortcode
  */
- 
+add_action('wp_enqueue_scripts', 'jigsaw_mp_jscripts');
 add_shortcode('jigsaw-mp', 'jigsaw_mp');
+
+
+function jigsaw_mp_jscripts() {
+    wp_deregister_script( 'jquery' );
+    wp_register_script( 'jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
+    wp_enqueue_script( 'jquery' );
+    
+    //my jscripts
+    wp_register_script('mp-jigsaw-js', plugins_url('/js/jigsaw_plugin.js', __FILE__));
+    wp_enqueue_script('mp-jigsaw-js');
+    wp_register_script('mp-jigsaw-pop', plugins_url('/js/jquery.bpopup-0.7.0.min.js', __FILE__));
+    wp_enqueue_script('mp-jigsaw-pop');
+    
+    //my styles
+    wp_register_style( 'mp-jigsaw-style', plugins_url('/css/jigsaw-plugin.css', __FILE__) );
+    wp_enqueue_style( 'mp-jigsaw-style' );
+} 
 
 function jigsaw_mp_testRange($int,$min,$max) {     
     return ($int>=$min && $int<=$max);
@@ -76,11 +96,20 @@ function jigsaw_mp($atts) {
         $preview = $options['preview'];
         if (!is_numeric($preview) || !jigsaw_mp_testRange(intval($preview),0,1)) {$preview=1;}
         $bgcolor = $options['bgcolor'];
-        $bgcolor = str_replace('#', '$preview', $bgcolor);
+       
+        $bgcolor = str_replace('#', '', $bgcolor);
         if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
         $showlink = $options['showlink'];
         if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
+        $gallery = $options['gallery'];
+        if (!$gallery || $gallery=='') {
+            $gallery = 'wp-content/plugins/mypuzzle-jigsaw/gallery';
+        } else {
+            $gallery = jigsaw_mp_clearpath($gallery);
+        }
+        $doresize = $options['doresize'];
+        if (!is_numeric($doresize) || !jigsaw_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
 
 	extract(shortcode_atts(array(
                 'size' => $size,
@@ -89,31 +118,65 @@ function jigsaw_mp($atts) {
                 'preview' => $preview,
                 'bgcolor' => $bgcolor,
                 'myimage' => $myimage,
+		'gallery' => $gallery,
+                'temppath' => $tmpPath,
 		'showlink' => $showlink,
+                'doresize' => $doresize
 	), $atts));
-        $flash = plugins_url('jigsaw-plugin.swf', __FILE__);
+        $flash = plugins_url('jigsaw-plugin2.swf', __FILE__);
+        $closebuton = plugins_url('img/close_button.png', __FILE__);
+        $galleryDir = ABSPATH . $gallery;
+        $galleryUrl = plugins_url('getGallery.php', __FILE__);
+        $resizeUrl = plugins_url('getresizedImage.php', __FILE__);
         
         $image = 'ocean-starfish.jpg';
         
+        $uploadDir = wp_upload_dir();
+        $absPath = ABSPATH;
+        $rndfile = jigsaw_mp_rndfile($galleryDir);
+        if (!$rndfile || $rndfile == '') $rndfile = $image;
+        if (!$myimage || $myimage == '')
+            $myimage = $gallery.'/'.$rndfile;
+        else {
+            //check wether its an url or path
+            //check wether we deal with an url or an local-path
+            $urlar = parse_url($myimage);
+            if ($urlar['host']=='') {
+                $myimage = jigsaw_mp_clearpath($myimage); 
+                $isurl = false;
+            }else{
+                $isurl = true;
+            }  
+        }
+        if (!$temppath || $temppath == '') {
+            $fulltemppath = $uploadDir['path'];
+            $fulltempurl = $uploadDir['url'];
+        }
+        else {
+            $fulltemppath = $absPath.'/'.jigsaw_mp_clearpath($temppath);
+            $fulltempurl = site_url().'/'.jigsaw_mp_clearpath($temppath);
+        }
+        $siteurl = site_url();        
+               
         $myJigsaw = new jigsaw_mp_jigsaw();
-        if ($myimage != '')
-        {
-            $myPic = $myJigsaw->getResizedImage($myimage, true);
-            $showlink = 1;
+        if ($doresize==1) {
+            if ($isurl)
+                $myPic = $myJigsaw->getResizedImage($myimage, $fulltemppath, $fulltempurl);
+            else
+                $myPic = $myJigsaw->getResizedImage($siteurl.'/'.jigsaw_mp_clearpath($myimage), $fulltemppath, $fulltempurl);
+            if (!$myPic) 
+                return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
         }
         else
-            $myPic = $myJigsaw->getResizedImage($image, false);
-        //check whether given url was an valid image url
-        if (!$myPic) return("Error: Url for <strong>'myimage={$myimage}'</strong> is not an image I can not load! Please change settings.");
+            $myPic = $myimage;
         
-        $width = $size*1.4;
-        $heigth = $size;
-        //$myPic = plugins_url('img/', __FILE__).'slide-5x5.jpg';
+        $width = $size;
+        $heigth = intval($size / 720 * 520);        
     
-        $output = "<div style='width:".$width."px'>";
-        $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
+        $output = "<div id='flashObject-jigsaw' style='z-index:0;'>";
+        $output .= "<object id='myFlashJigsaw' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
 	$output .= " codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'";
-	$output .= " width='".+$width."' height='".$heigth."' align='middle'>\r";  
+	$output .= " width='".$width."' height='".$heigth."' align='middle'>\r";  
 	$output .= "<param name='allowScriptAccess' value='sameDomain' />\r";
 	$output .= "<param name='allowFullScreen' value='false' />\r";
 	$output .= "<param name='movie' value='".$flash."' />\r";
@@ -121,15 +184,72 @@ function jigsaw_mp($atts) {
 	$output .= "<param name='quality' value='high' />\r";
 	$output .= "<param name='menu' value='false' />\r";
 	$output .= "<param name='bgcolor' value='#".$bgcolor."' />\r";
+        $output .= "<param name='wmode' value='transparent' />";
 	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
-        $output .= "<br/><a style=\"font-size: 10px\" href=\"http://mypuzzle.org/jigsaw/\">Jigsaw Puzzle</a>";
+        $output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
         $output .= "</div>";
+        //add diff for the image gallery
+        $output .= "<div id='jigsaw_gallery' style='z-index:1;'>\r";
+        $output .= "    <span class='jigsaw_button bClose'><img src='".$closebuton."' /></span>\r";
+        $output .= "    <div id='jigsaw_image_container' class='jigsaw_scroll-pane'></div>\r";
+        $output .= "</div>\r";
+        //add diff for the image wrapper template
+        $output .= "<div id='jigsaw_imgWrapTemplate' class='jigsaw_imageWrapper' style='visibility:hidden;'>\r"; //
+        $output .= "    <img src='' class='jigsaw_pickImage'/>\r";
+        $output .= "    <div class='jigsaw_imageTitle'>Turtle</div>\r";
+        $output .= "</div>\r";
+        //add invisible variables for jquery access
+        $output .= "<div id='flashvar_preview_jigsaw' style='visibility:hidden;position:absolute'>".$preview."</div>\r";
+        $output .= "<div id='flashvar_rotation_jigsaw' style='visibility:hidden;position:absolute'>".$rotation."</div>\r";
+        $output .= "<div id='flashvar_pieces_jigsaw' style='visibility:hidden;position:absolute'>".$pieces."</div>\r";
+        $output .= "<div id='flashvar_startPicture_jigsaw' style='visibility:hidden;position:absolute'>".$myPic."</div>\r";
+        $output .= "<div id='flashvar_width_jigsaw' style='visibility:hidden;position:absolute'>".$width."</div>\r";
+        $output .= "<div id='flashvar_height_jigsaw' style='visibility:hidden;position:absolute'>".$heigth."</div>\r";
+        $output .= "<div id='flashvar_bgcolor_jigsaw' style='visibility:hidden;position:absolute'>".$bgcolor."</div>\r";
+        $output .= "<div id='var_galleryUrl_jigsaw' style='visibility:hidden;position:absolute'>".$galleryUrl."</div>\r";
+        $output .= "<div id='var_galleryDir_jigsaw' style='visibility:hidden;position:absolute'>".$galleryDir."</div>\r";
+        $output .= "<div id='var_galleryPath_jigsaw' style='visibility:hidden;position:absolute'>".$gallery."</div>\r";
+        $output .= "<div id='var_resizeUrl_jigsaw' style='visibility:hidden;position:absolute'>".$resizeUrl."</div>\r";
+        $output .= "<div id='var_resizePath_jigsaw' style='visibility:hidden;position:absolute'>".$fulltemppath."</div>\r";
+        $output .= "<div id='var_resizePathUrl_jigsaw' style='visibility:hidden;position:absolute'>".$fulltempurl."</div>\r";
+        $output .= "<div id='var_plugin_jigsaw' style='visibility:hidden;position:absolute'>".$gallery."/</div>\r";
+        $output .= "<div id='var_flash_jigsaw' style='visibility:hidden;position:absolute'>".$flash."</div>\r";
+        $output .= "<div id='var_doresize_jigsaw' style='visibility:hidden;position:absolute'>".$doresize."</div>\r";
+        //add jscript to start gallery from flash
+        $output .= "<script language='javascript'>\r";
+        $output .= "function jigsaw_openGallery() {jigsaw_showGallery();}\r";
+        $output .= "</script>\r";
         
         return($output);
 
+}
+function jigsaw_mp_clearpath($inputpath) {
+    if (substr($inputpath, 0, 1)=='/') $inputpath = substr($inputpath, 1);
+    if (substr($inputpath, strlen($inputpath)-1, 1)=='/') $inputpath = substr($inputpath, 0, strlen($inputpath)-1);
+    return($inputpath);
+}
+
+function jigsaw_mp_rndfile($dir) {
+    
+    if (!is_dir($dir)) return(null);
+    if( $checkDir = opendir($dir) ) {
+        $cFile = 0;
+        // check all files in $dir, add to array listFile
+        $preg = "/.(jpg|gif|png|jpeg)/i";
+        while( $file = readdir($checkDir) ) {
+            if(preg_match($preg, $file)) {
+                if( !is_dir($dir . "/" . $file) ) {
+                    $listFile[$cFile] = $file;
+                    $cFile++;
+                }
+            }
+        }
+    }
+    $num = rand(0, count($listFile)-1 );
+    return($listFile[$num]);
 }
 /**
  * Settings
@@ -161,6 +281,9 @@ function jigsaw_mp_options_page() {
                 $newoptions['preview'] = isset($_POST['preview'])?$_POST['preview']:$options['preview'];
                 $newoptions['bgcolor'] = isset($_POST['bgcolor'])?$_POST['bgcolor']:$options['bgcolor'];
                 $newoptions['myimage'] = isset($_POST['myimage'])?$_POST['myimage']:$options['myimage'];
+                $newoptions['gallery'] = isset($_POST['gallery'])?$_POST['gallery']:$options['gallery'];
+                $newoptions['temppath'] = isset($_POST['temppath'])?$_POST['temppath']:$options['temppath'];
+                $newoptions['doresize'] = isset($_POST['doresize'])?$_POST['doresize']:$options['doresize'];
                 
                 if ( $options != $newoptions ) {
                         $options = $newoptions;
@@ -173,12 +296,22 @@ function jigsaw_mp_options_page() {
         update_option('shc_op', $options);
     }
         $showlink = $options['showlink'];
+        if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
 	$size = $options['size'];
+        if (!is_numeric($size) || !jigsaw_mp_testRange(intval($size),100,1500)) {$size=460;} //to be checked
 	$pieces = $options['pieces'];
+        if (!is_numeric($pieces) || !jigsaw_mp_testRange(intval($pieces),2,20)) {$pieces=4;}
         $rotation = $options['rotation'];
+        if (!is_numeric($rotation) || !jigsaw_mp_testRange(intval($rotation),0,1)) {$rotation=1;}
         $image = $options['preview'];
         $bgcolor = $options['bgcolor'];
+        $bgcolor = str_replace('#', '', $bgcolor);
+        if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
+        $gallery = $options['gallery'];
+        $temppath = $options['temppath'];
+        $doresize = $options['doresize'];
+        if (!is_numeric($doresize) || !jigsaw_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
         
 	?>
         <form method="POST" name="options" target="_self" enctype="multipart/form-data">
@@ -193,7 +326,9 @@ function jigsaw_mp_options_page() {
                     <input style="width: 150px" type="text" name="size" value="<?php echo ($size); ?>">
                     
                 </td>
-                <td width="500">Try 300 then you are not sure.</td>
+                <td width="500">
+                    460 - equates to 460 pixel width for the flash and gives you the best image quality
+                </td>
             </tr>
             <tr>
                 <td width="50">
@@ -211,7 +346,9 @@ function jigsaw_mp_options_page() {
                             <option value="10"<?php echo ($pieces == 10 ? " selected" : "") ?>><?php echo _e("10x10 - 100 pieces") ?></option>
                     </select>
                 </td>
-                <td width="200"></td>
+                <td width="200">
+                    This configures the complexity and amount of overall pieces.
+                </td>
             </tr>
             <tr>
                 <td width="100">
@@ -223,7 +360,9 @@ function jigsaw_mp_options_page() {
                             <option value="1"<?php echo ($rotation == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
                     </select>
                 </td>
-                <td width="200"></td>
+                <td width="200">
+                    The pieces can be rotated by mousewheel or the space key.
+                </td>
             </tr>
             <tr>
                 <td width="100">
@@ -231,11 +370,13 @@ function jigsaw_mp_options_page() {
                 </td>
                 <td>
                     <select name="preview" id="preview" style="width: 150px">
-                            <option value="0"<?php echo ($rotation == 0 ? " selected" : "") ?>><?php echo _e("No") ?></option>
-                            <option value="1"<?php echo ($rotation == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
+                            <option value="0"<?php echo ($preview == 0 ? " selected" : "") ?>><?php echo _e("No") ?></option>
+                            <option value="1"<?php echo ($preview == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
                     </select>
                 </td>
-                <td width="200"></td>
+                <td width="200">
+                    Enable or disable a preview of the final image.
+                </td>
             </tr>
             <tr>
                 <td width="100">
@@ -248,16 +389,51 @@ function jigsaw_mp_options_page() {
             </tr>
             <tr>
                 <td width="100">
-                    Image Url
+                    Image Url/Path
                 </td>
                 <td>
                     <input style="width: 150px" type="text" name="myimage" value="<?php echo ($myimage); ?>">
                 </td>
                 <td width="500">
-                    Only available with link option.
+                    Leave blank to have a random image displayed on page load, or point to a static image.
                 </td>
             </tr>
-            
+            <tr>
+                <td width="100">
+                    Path to Gallery
+                </td>
+                <td>
+                    <input style="width: 200px" type="text" name="gallery" value="<?php echo ($gallery); ?>">
+                </td>
+                <td width="700">
+                    Point to your own image directory or leave blank for MyPuzzle Images Gallery. 
+                </td>
+            </tr>
+            <tr>
+                <td width="100">
+                    Temporary Path
+                </td>
+                <td>
+                    <input style="width: 200px" type="text" name="temppath" value="<?php echo ($temppath); ?>">
+                </td>
+                <td width="700">
+                    Point to a temporary and writable directory for images to be resized. Leave blank for default upload.
+                </td>
+            </tr>
+            <tr>
+                <td width="100">
+                    Resize
+                </td>
+                <td>
+                    <select name="doresize" id="doresize" style="width: 200px">
+                            <option value="0"<?php echo ($doresize == 0 ? " selected" : "") ?>><?php echo _e("Dont resize images") ?></option>
+                            <option value="1"<?php echo ($doresize == 1 ? " selected" : "") ?>><?php echo _e("Resize images to fit") ?></option>
+                    </select>
+                </td>
+                <td width="500">
+                    Saves a resized copy in the image directory you designated above. 
+                </td>
+            </tr>
         </table>
         
         <p class="submit">

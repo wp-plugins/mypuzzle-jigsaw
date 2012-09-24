@@ -7,25 +7,14 @@
 
 class jigsaw_mp_jigsaw
 {
-    function getResizedImage($inputImage, $isurl)
+    function getResizedImage($inputImage, $resizePath, $resizeUrl)
     {
         $extension = end(explode('.', $inputImage));
         $myimage_filename = end(explode('/', $inputImage));
-
+        
         $image = new jigsaw_mp_simpleImage();
-        if (!$isurl)
-            $loadDir = plugins_url('img/', __FILE__);
-        else
-            $loadDir = '';
-        $uploadDir = wp_upload_dir();
-        $uplDir = $uploadDir['path'].'/';
-        $dwnDir = $uploadDir['url'].'/';        
-        //$uploadDir = plugins_url('img/', __FILE__);
-        //$uploadDir = wp_upload_dir();
+        $image->load($inputImage);
         
-        if (!$image->isImage($loadDir.$inputImage)) return(false);
-        
-        $image->load($loadDir.$inputImage);
         //get sizes
         $height = $image->getHeight();
         $width = $image->getWidth();
@@ -33,12 +22,10 @@ class jigsaw_mp_jigsaw
             $image->resizeToWidth(640);
         else
             $image->resizeToHeight(440);
-        if ($isurl)
-            $file_name = $myimage_filename;
-        else
-            $file_name = $inputImage;
-        $image->save($uplDir.$file_name);
-        return($dwnDir.$file_name);
+        
+        $newFileUrl = $resizeUrl.'/'.$myimage_filename;
+        $image->save($resizePath.'/'.$myimage_filename);
+        return($newFileUrl);
 
     }
 
@@ -58,7 +45,7 @@ class jigsaw_mp_simpleImage {
    var $image_type;
  
    function load($filename) {
- 
+      $filename = str_replace(' ', '%20', $filename);
       $image_info = getimagesize($filename);
       $this->image_type = $image_info[2];
       if( $this->image_type == IMAGETYPE_JPEG ) {
