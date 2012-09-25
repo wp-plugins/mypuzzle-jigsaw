@@ -14,6 +14,9 @@ Fast and easy integration of jigsaw puzzles into your blogs.
 
 Major features in this version include: 
 
+
+* New! Use the included MyPuzzle Image Gallery and random startup images
+* New! Link your own Image Library
 * The jigsaw puzzles can be inserted everywhere: in your theme files, posts and pages.
 * Use your own image url and automatically get jigsaw puzzles for them
 * many different levels from 2x2 pieces up to 20x20 pieces are available 
