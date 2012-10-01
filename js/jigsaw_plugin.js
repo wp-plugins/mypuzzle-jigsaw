@@ -1,10 +1,3 @@
-//var m_dirUpload;
-//var m_urlUpload;
-//var m_pathUpload;
-//var m_dirPlugin;
-//var m_urlUpload;
-//var m_myImageUrl;
-
 var m_width_jigsaw;
 var m_height_jigsaw;
 var m_flash_jigsaw;
@@ -24,6 +17,7 @@ var m_doResize_jigsaw;
 var m_urlResize_jigsaw;
 var m_pathResize_jigsaw;
 var m_urlResizePath_jigsaw;
+var m_siteurl_jigsaw;
 
 
 function jigsaw_pictureChange() {
@@ -95,6 +89,8 @@ function jigsaw_getFlashVars() {
     m_urlResize_jigsaw = jQuery('#var_resizeUrl_jigsaw').text();
     m_pathResize_jigsaw = jQuery('#var_resizePath_jigsaw').text();
     m_urlResizePath_jigsaw = jQuery('#var_resizePathUrl_jigsaw').text();
+    m_siteurl_jigsaw = jQuery('#var_siteurl_jigsaw').text();
+    
     
 }
 
@@ -111,7 +107,7 @@ function jigsaw_getData(){
             item.attr({'style': ''});
             item.find('.jigsaw_imageTitle').text(key);
             var d = new Date();
-            item.find('img').attr('src',m_pathGallery_jigsaw+'/'+val);
+            item.find('img').attr('src',m_siteurl_jigsaw + '/' + m_pathGallery_jigsaw+'/'+val);
             
             item.find('img').click(function(){      
                 m_myImage_jigsaw = jQuery(this).attr("src");
@@ -137,15 +133,15 @@ function jigsaw_getResizedImage(selImage) {
     
     var sUrl = m_urlResize_jigsaw+'?imageUrl='+selImage+'&resizePath='+m_pathResize_jigsaw;
     //console.log(sUrl);
-    $.getJSON(sUrl,function(data){
+    jQuery.getJSON(sUrl,function(data){
         
         if (data == null) return;
 
-        $.each(data, function(key, val) {
+        jQuery.each(data, function(key, val) {
             //console.log(key+"-"+val);
             if (key == 'file') m_myImage_jigsaw = m_urlResizePath_jigsaw + '/' + val;
             //console.log('m_myImage: '+m_myImage);
         });
-        $('#jigsaw_gallery').bPopup().close();
+        jQuery('#jigsaw_gallery').bPopup().close();
     });
 }
