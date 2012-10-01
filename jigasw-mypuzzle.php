@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.1.0
+Version: 1.1.1
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -64,8 +64,6 @@ add_shortcode('jigsaw-mp', 'jigsaw_mp');
 
 
 function jigsaw_mp_jscripts() {
-    wp_deregister_script( 'jquery' );
-    wp_register_script( 'jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
     wp_enqueue_script( 'jquery' );
     
     //my jscripts
@@ -168,7 +166,10 @@ function jigsaw_mp($atts) {
                 return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
         }
         else
-            $myPic = $myimage;
+            if ($isurl)
+                $myPic = $myimage;
+            else
+                $myPic = site_url() . '/'. $myimage;
         
         $width = $size;
         $heigth = intval($size / 720 * 520);        
@@ -218,6 +219,7 @@ function jigsaw_mp($atts) {
         $output .= "<div id='var_plugin_jigsaw' style='visibility:hidden;position:absolute'>".$gallery."/</div>\r";
         $output .= "<div id='var_flash_jigsaw' style='visibility:hidden;position:absolute'>".$flash."</div>\r";
         $output .= "<div id='var_doresize_jigsaw' style='visibility:hidden;position:absolute'>".$doresize."</div>\r";
+        $output .= "<div id='var_siteurl_jigsaw' style='visibility:hidden;position:absolute'>".site_url()."</div>\r";
         //add jscript to start gallery from flash
         $output .= "<script language='javascript'>\r";
         $output .= "function jigsaw_openGallery() {jigsaw_showGallery();}\r";

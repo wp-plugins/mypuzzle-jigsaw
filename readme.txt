@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: jigsaw, mypuzzle, puzzle, jigsaw puzzle, puzzle games, free jigsaw puzzle
 Requires at least: 2.5
 Tested up to: 3.4.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,3 +62,7 @@ Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugi
  * Fixed some upload path handlings and preview-setting not being saved
  * Added MyPuzzle Image Gallery to choose from a variety of images
  * Added Option to link your own image path as gallery input
+
+ = 1.1.1 =
+ * Fixed jQuery Wordpress default
+ * Fixed custom path handling
