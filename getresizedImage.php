@@ -10,7 +10,7 @@ $file_path = parse_url( $url );
 $file_path = $_SERVER['DOCUMENT_ROOT'] . $file_path['path'];
 $orig_size = getimagesize( $url );
 		
-$image_src[0] = $img_url;
+$image_src[0] = $url;
 $image_src[1] = $orig_size[0];
 $image_src[2] = $orig_size[1];
 

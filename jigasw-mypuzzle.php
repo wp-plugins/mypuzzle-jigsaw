@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.1.2
+Version: 1.1.3
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -289,7 +289,7 @@ function jigsaw_mp_options_page() {
                 
                 if ( $options != $newoptions ) {
                         $options = $newoptions;
-                        update_option('shc_op', $options);			
+                        update_option('shc_op', $options);
                 }
 
  	} 
@@ -305,7 +305,7 @@ function jigsaw_mp_options_page() {
         if (!is_numeric($pieces) || !jigsaw_mp_testRange(intval($pieces),2,20)) {$pieces=4;}
         $rotation = $options['rotation'];
         if (!is_numeric($rotation) || !jigsaw_mp_testRange(intval($rotation),0,1)) {$rotation=1;}
-        $image = $options['preview'];
+        $preview = $options['preview'];
         $bgcolor = $options['bgcolor'];
         $bgcolor = str_replace('#', '', $bgcolor);
         if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
