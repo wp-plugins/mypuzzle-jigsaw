@@ -70,3 +70,8 @@ Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugi
  = 1.1.2 =
  * Fixed jQuery Wordpress default
  * Fixed custom path handling
+
+ = 1.1.3 =
+ * Fixed Preview option not saved
+ * Fixed resize image function for new php version
+ * Fixed remove folders from gallery
