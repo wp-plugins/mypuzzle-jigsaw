@@ -3,12 +3,12 @@ Contributors: Thomas Seidel
 Donate link: http://mypuzzle.org
 Tags: jigsaw, mypuzzle, puzzle, jigsaw puzzle, puzzle games, free jigsaw puzzle
 Requires at least: 2.5
-Tested up to: 3.4.1
-Stable tag: 1.1.2
+Tested up to: 3.4.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Fast and easy integration of jigsaw puzzles into your blogs. 
+Fast and easy integration of jigsaw puzzles into your blogs. Adobe Flash Version for best quality.
 
 == Description ==
 
@@ -46,6 +46,10 @@ Examples:
 - [jigsaw-mp size=400 pieces=3 rotation=1 preview=0 bgcolor='#f4f4f4' myimage='' myimage='http://mysite.domain/img_folder/example.jpg']
 - [jigsaw-mp gallery='wp-content/uploads/myimages']
 - Or any combination of the above
+
+When using the resize option is not possible you have to resize the images yourself.
+The best size for the puzzle is about maximum height of 440 and maximum width of 640.
+So depending on the height/width ration you have to resize your image to fit one side the maximum value while beeing less on the other.
 
 Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugin</a>
 
