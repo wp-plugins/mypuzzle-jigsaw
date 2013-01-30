@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.1.3
+Version: 1.1.4
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -45,14 +45,14 @@ function get_jigsaw_mp_options ($default = false){
             'doresize' => '0'
             );
 	if ($default) {
-		update_option('shc_op', $shc_default);
+		update_option('jigsaw_mp_set', $shc_default);
 		return $shc_default;
 	}
 	
-	$options = get_option('shc_op');
+	$options = get_option('jigsaw_mp_set');
 	if (isset($options))
 		return $options;
-	update_option('shc_op', $shc_default);
+	update_option('jigsaw_mp_set', $shc_default);
 	return $options;
 }
 
@@ -190,7 +190,7 @@ function jigsaw_mp($atts) {
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
-        $output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
+        //$output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
         $output .= "</div>";
         //add diff for the image gallery
         $output .= "<div id='jigsaw_gallery' style='z-index:1;'>\r";
@@ -289,13 +289,13 @@ function jigsaw_mp_options_page() {
                 
                 if ( $options != $newoptions ) {
                         $options = $newoptions;
-                        update_option('shc_op', $options);
+                        update_option('jigsaw_mp_set', $options);
                 }
 
  	} 
 
 	if(isset($_POST['Use_Default'])){
-        update_option('shc_op', $options);
+        update_option('jigsaw_mp_set', $options);
     }
         $showlink = $options['showlink'];
         if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
