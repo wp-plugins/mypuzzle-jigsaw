@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.1.4
+Version: 1.1.5
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -190,7 +190,7 @@ function jigsaw_mp($atts) {
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
-        //$output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
+        $output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
         $output .= "</div>";
         //add diff for the image gallery
         $output .= "<div id='jigsaw_gallery' style='z-index:1;'>\r";

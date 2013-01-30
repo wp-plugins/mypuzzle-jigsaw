@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: jigsaw, mypuzzle, puzzle, jigsaw puzzle, puzzle games, free jigsaw puzzle
 Requires at least: 2.5
 Tested up to: 3.4.2
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,3 +78,6 @@ Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugi
 
  = 1.1.4 =
  * Fixed save option conflict with sudoku plugin
+
+ = 1.1.5 =
+ * Fixed support link
