@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.1.5
+Version: 1.2.0
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -42,7 +42,9 @@ function get_jigsaw_mp_options ($default = false){
             'gallery' => 'wp-content/plugins/mypuzzle-jigsaw/gallery/',
             'temppath' => '',
             'showlink' => '0',
-            'doresize' => '0'
+            'doresize' => '0',
+            'showrestart' => '1',
+            'showgallery' => '0'
             );
 	if ($default) {
 		update_option('jigsaw_mp_set', $shc_default);
@@ -107,6 +109,8 @@ function jigsaw_mp($atts) {
             $gallery = jigsaw_mp_clearpath($gallery);
         }
         $doresize = $options['doresize'];
+        $showRestart = $options['showrestart'];
+        $showGallery = $options['showgallery'];
         if (!is_numeric($doresize) || !jigsaw_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
 
 	extract(shortcode_atts(array(
@@ -119,9 +123,11 @@ function jigsaw_mp($atts) {
 		'gallery' => $gallery,
                 'temppath' => $tmpPath,
 		'showlink' => $showlink,
-                'doresize' => $doresize
+                'doresize' => $doresize,
+                'showrestart' => $showRestart,
+                'showgallery' => $showGallery
 	), $atts));
-        $flash = plugins_url('jigsaw-plugin2.swf', __FILE__);
+        $flash = plugins_url('jigsaw-plugin.swf', __FILE__);
         $closebuton = plugins_url('img/close_button.png', __FILE__);
         $galleryDir = ABSPATH . $gallery;
         $galleryUrl = plugins_url('getGallery.php', __FILE__);
@@ -181,16 +187,16 @@ function jigsaw_mp($atts) {
 	$output .= "<param name='allowScriptAccess' value='sameDomain' />\r";
 	$output .= "<param name='allowFullScreen' value='false' />\r";
 	$output .= "<param name='movie' value='".$flash."' />\r";
-	$output .= "<param name='flashvars' value='myThumbnail=" . $preview . "&myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' />\r";
+	$output .= "<param name='flashvars' value='myThumbnail=" . $preview . "&myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "&myRestart=" . $showRestart . "&myGallery=" . $showGallery . "' />\r";
 	$output .= "<param name='quality' value='high' />\r";
 	$output .= "<param name='menu' value='false' />\r";
 	$output .= "<param name='bgcolor' value='#".$bgcolor."' />\r";
         $output .= "<param name='wmode' value='transparent' />";
-	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
+	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "&myRestart=" . $showRestart . "&myGallery=" . $showGallery . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
-        $output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>Jigsaw Puzzles</a></div>";
+        $output .= "<div style=\"width:".$width."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/jigsaw/'>".jigsaw_getRndAnchor()."</a> by mypuzzle.org</div>";
         $output .= "</div>";
         //add diff for the image gallery
         $output .= "<div id='jigsaw_gallery' style='z-index:1;'>\r";
@@ -219,6 +225,9 @@ function jigsaw_mp($atts) {
         $output .= "<div id='var_plugin_jigsaw' style='visibility:hidden;position:absolute'>".$gallery."/</div>\r";
         $output .= "<div id='var_flash_jigsaw' style='visibility:hidden;position:absolute'>".$flash."</div>\r";
         $output .= "<div id='var_doresize_jigsaw' style='visibility:hidden;position:absolute'>".$doresize."</div>\r";
+        $output .= "<div id='var_showrestart_jigsaw' style='visibility:hidden;position:absolute'>".$showRestart."</div>\r";
+        $output .= "<div id='var_showgallery_jigsaw' style='visibility:hidden;position:absolute'>".$showGallery."</div>\r";
+        $output .= "<div id='var_anchor_jigsaw' style='visibility:hidden;position:absolute'>".jigsaw_getRndAnchor()."</div>\r";
         $output .= "<div id='var_siteurl_jigsaw' style='visibility:hidden;position:absolute'>".site_url()."</div>\r";
         //add jscript to start gallery from flash
         $output .= "<script language='javascript'>\r";
@@ -228,6 +237,20 @@ function jigsaw_mp($atts) {
         return($output);
 
 }
+
+function jigsaw_getRndAnchor()
+{
+    $asKW = array('Jigsaw','Jigsaw','Jigsaw','Jigsaw'
+        ,'Jigsaw','Jigsaw', 'Jigsaw', 'Jigsaw Puzzles'
+        , 'Jigsaw Puzzles', 'Jigsaw Puzzles', 'Jigsaw Puzzles', 'Jigsaw Puzzles'
+        , 'Free Jigsaw Puzzles', 'Free Jigsaw Puzzles', 'Jigsaw Puzzle', 'Jigsaw Puzzle');
+    $asHC = array('a', 'b', 'c', 'd', 'e', 'f', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0');        
+    $md5Str = strtolower(substr(strval(md5(strtolower($_SERVER['HTTP_HOST']))), 0, 1));    
+    $idx = array_search($md5Str, $asHC);
+    return($asKW[$idx]);
+}
+
+
 function jigsaw_mp_clearpath($inputpath) {
     if (substr($inputpath, 0, 1)=='/') $inputpath = substr($inputpath, 1);
     if (substr($inputpath, strlen($inputpath)-1, 1)=='/') $inputpath = substr($inputpath, 0, strlen($inputpath)-1);
@@ -286,6 +309,8 @@ function jigsaw_mp_options_page() {
                 $newoptions['gallery'] = isset($_POST['gallery'])?$_POST['gallery']:$options['gallery'];
                 $newoptions['temppath'] = isset($_POST['temppath'])?$_POST['temppath']:$options['temppath'];
                 $newoptions['doresize'] = isset($_POST['doresize'])?$_POST['doresize']:$options['doresize'];
+                $newoptions['showrestart'] = isset($_POST['showrestart'])?$_POST['showrestart']:$options['showrestart'];
+                $newoptions['showgallery'] = isset($_POST['showgallery'])?$_POST['showgallery']:$options['showgallery'];
                 
                 if ( $options != $newoptions ) {
                         $options = $newoptions;
@@ -313,6 +338,8 @@ function jigsaw_mp_options_page() {
         $gallery = $options['gallery'];
         $temppath = $options['temppath'];
         $doresize = $options['doresize'];
+        $showrestart = $options['showrestart'];
+        $showgallery = $options['showgallery'];
         if (!is_numeric($doresize) || !jigsaw_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
         
 	?>
@@ -378,6 +405,34 @@ function jigsaw_mp_options_page() {
                 </td>
                 <td width="200">
                     Enable or disable a preview of the final image.
+                </td>
+            </tr>
+            <tr>
+                <td width="100">
+                    Show Restart Button
+                </td>
+                <td>
+                    <select name="showrestart" id="showrestart" style="width: 150px">
+                            <option value="0"<?php echo ($showrestart == 0 ? " selected" : "") ?>><?php echo _e("No") ?></option>
+                            <option value="1"<?php echo ($showrestart == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
+                    </select>
+                </td>
+                <td width="200">
+                    Shows a button to restart the current puzzle.
+                </td>
+            </tr>
+            <tr>
+                <td width="100">
+                    Show Gallery Button
+                </td>
+                <td>
+                    <select name="showgallery" id="showgallery" style="width: 150px">
+                            <option value="0"<?php echo ($showgallery == 0 ? " selected" : "") ?>><?php echo _e("No") ?></option>
+                            <option value="1"<?php echo ($showgallery == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
+                    </select>
+                </td>
+                <td width="200">
+                    Shows the gallery button to enable image selection for the user from the specified or default gallery path.
                 </td>
             </tr>
             <tr>

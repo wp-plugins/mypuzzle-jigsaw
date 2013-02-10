@@ -14,9 +14,9 @@ Fast and easy integration of jigsaw puzzles into your blogs. Adobe Flash Version
 
 Major features in this version include: 
 
-
-* New! Use the included MyPuzzle Image Gallery and random startup images
-* New! Link your own Image Library
+* New! Hide restart and gallery button
+* Use the included MyPuzzle Image Gallery and random startup images
+* Link your own Image Library
 * The jigsaw puzzles can be inserted everywhere: in your theme files, posts and pages.
 * Use your own image url and automatically get jigsaw puzzles for them
 * many different levels from 2x2 pieces up to 20x20 pieces are available 
@@ -51,7 +51,7 @@ When using the resize option is not possible you have to resize the images yours
 The best size for the puzzle is about maximum height of 440 and maximum width of 640.
 So depending on the height/width ration you have to resize your image to fit one side the maximum value while beeing less on the other.
 
-Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugin</a>
+Visit <a href="http://blog.mypuzzle.org/jigsaw-for-wordpress-plugin/">Wordpress Jigsaw Plugin</a>
 
 == Screenshots ==
 
@@ -81,3 +81,6 @@ Visit <a href="http://mypuzzle.org/jigsaw/wordpress.html">Wordpress Jigsaw Plugi
 
  = 1.1.5 =
  * Fixed support link
+
+ = 1.2.0
+ * Added functionality to hide restart and gallery button
