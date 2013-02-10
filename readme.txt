@@ -82,5 +82,5 @@ Visit <a href="http://blog.mypuzzle.org/jigsaw-for-wordpress-plugin/">Wordpress 
  = 1.1.5 =
  * Fixed support link
 
- = 1.2.1
+ = 1.2.1 =
  * Added functionality to hide restart and gallery button
