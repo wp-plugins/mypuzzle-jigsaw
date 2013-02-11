@@ -192,7 +192,7 @@ function jigsaw_mp($atts) {
 	$output .= "<param name='menu' value='false' />\r";
 	$output .= "<param name='bgcolor' value='#".$bgcolor."' />\r";
         $output .= "<param name='wmode' value='transparent' />";
-	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "&myRestart=" . $showRestart . "&myGallery=" . $showGallery . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
+	$output .= "<embed src='".$flash."' flashvars='myThumbnail=" . $preview . "&myRot=" . $rotation . "&myPieces=" . $pieces . "&myPic=" . $myPic . "&myRestart=" . $showRestart . "&myGallery=" . $showGallery . "' quality='high' bgcolor='#".$bgcolor."'  swLiveConnect='true' ";
 	$output .= "    width='".$width."' height='".$heigth."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
