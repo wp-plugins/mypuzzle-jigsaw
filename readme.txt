@@ -85,3 +85,6 @@ Visit <a href="http://blog.mypuzzle.org/jigsaw-for-wordpress-plugin/">Wordpress 
  = 1.2.1 =
  * Added functionality to hide restart and gallery button
  * Fixed bug on preview parameter
+
+ = 1.2.2 =
+ * Finally fixed the option initialization

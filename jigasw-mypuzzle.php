@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Jigsaw
 Plugin URI: http://mypuzzle.org/jigsaw/wordpress.html
 Description: Include a mypuzzle.org jigsaw Puzzle in your blogs with just one shortcode. 
-Version: 1.2.1
+Version: 1.2.2
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -41,10 +41,9 @@ function get_jigsaw_mp_options ($default = false){
             'myimage' => '',
             'gallery' => 'wp-content/plugins/mypuzzle-jigsaw/gallery/',
             'temppath' => '',
-            'showlink' => '0',
             'doresize' => '0',
             'showrestart' => '1',
-            'showgallery' => '0'
+            'showgallery' => '1'
             );
 	if ($default) {
 		update_option('jigsaw_mp_set', $shc_default);
@@ -64,7 +63,41 @@ function get_jigsaw_mp_options ($default = false){
 add_action('wp_enqueue_scripts', 'jigsaw_mp_jscripts');
 add_shortcode('jigsaw-mp', 'jigsaw_mp');
 
+/**
+ * on activation, reset to default options
+ */
+register_activation_hook( __FILE__, 'checkoptions' );
 
+/**
+ * Creates the options if nothing has been installed before
+ */
+function checkoptions() {
+    //check if option is already present
+    //option key is plugin_abbr_op, but can be anything unique
+    delete_option('jigsaw_mp_set');
+    if(!get_option('jigsaw_mp_set')) {
+        //not present, so add
+        $op = array(
+            'size' => '460',
+            'pieces' => '4',
+            'rotation' => '1',
+            'preview' => '1',
+            'bgcolor' => '#ffffff',
+            'myimage' => '',
+            'gallery' => 'wp-content/plugins/mypuzzle-jigsaw/gallery/',
+            'temppath' => '',
+            'doresize' => '0',
+            'showrestart' => '1',
+            'showgallery' => '1'
+        );
+        
+        add_option('jigsaw_mp_set', $op);
+    }
+}
+
+/**
+ * load jscripts and css files in header
+ */
 function jigsaw_mp_jscripts() {
     wp_enqueue_script( 'jquery' );
     
@@ -100,8 +133,6 @@ function jigsaw_mp($atts) {
         $bgcolor = str_replace('#', '', $bgcolor);
         if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
-        $showlink = $options['showlink'];
-        if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
         $gallery = $options['gallery'];
         if (!$gallery || $gallery=='') {
             $gallery = 'wp-content/plugins/mypuzzle-jigsaw/gallery';
@@ -122,8 +153,7 @@ function jigsaw_mp($atts) {
                 'myimage' => $myimage,
 		'gallery' => $gallery,
                 'temppath' => $tmpPath,
-		'showlink' => $showlink,
-                'doresize' => $doresize,
+		'doresize' => $doresize,
                 'showrestart' => $showRestart,
                 'showgallery' => $showGallery
 	), $atts));
@@ -299,8 +329,7 @@ function jigsaw_mp_options_page() {
 	<?php 
 
 	if(isset($_POST['Submit'])){
-                $newoptions['showlink'] = isset($_POST['showlink'])?$_POST['showlink']:$options['showlink'];
-     		$newoptions['size'] = isset($_POST['size'])?$_POST['size']:$options['size'];
+                $newoptions['size'] = isset($_POST['size'])?$_POST['size']:$options['size'];
      		$newoptions['pieces'] = isset($_POST['pieces'])?$_POST['pieces']:$options['pieces'];
                 $newoptions['rotation'] = isset($_POST['rotation'])?$_POST['rotation']:$options['rotation'];
                 $newoptions['preview'] = isset($_POST['preview'])?$_POST['preview']:$options['preview'];
@@ -322,9 +351,7 @@ function jigsaw_mp_options_page() {
 	if(isset($_POST['Use_Default'])){
         update_option('jigsaw_mp_set', $options);
     }
-        $showlink = $options['showlink'];
-        if (!is_numeric($showlink) || !jigsaw_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
-	$size = $options['size'];
+        $size = $options['size'];
         if (!is_numeric($size) || !jigsaw_mp_testRange(intval($size),100,1500)) {$size=460;} //to be checked
 	$pieces = $options['pieces'];
         if (!is_numeric($pieces) || !jigsaw_mp_testRange(intval($pieces),2,20)) {$pieces=4;}
