@@ -14,6 +14,7 @@ Fast and easy integration of jigsaw puzzles into your blogs. Adobe Flash Version
 
 Major features in this version include: 
 
+* New! Add a custom redirect to another page when the user solved the puzzle
 * New! Hide restart and gallery button
 * Use the included MyPuzzle Image Gallery and random startup images
 * Link your own Image Library
@@ -45,6 +46,7 @@ Examples:
 - [jigsaw-mp size=300 pieces=4 rotation=1 preview=1 bgcolor='#ffffff' myimage='']
 - [jigsaw-mp size=400 pieces=3 rotation=1 preview=0 bgcolor='#f4f4f4' myimage='' myimage='http://mysite.domain/img_folder/example.jpg']
 - [jigsaw-mp gallery='wp-content/uploads/myimages']
+- [jigsaw-mp doredirect='1' mylink='http://mypuzzle.org']
 - Or any combination of the above
 
 When using the resize option is not possible you have to resize the images yourself.
