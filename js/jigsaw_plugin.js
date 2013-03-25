@@ -21,6 +21,8 @@ var m_pathResize_jigsaw;
 var m_urlResizePath_jigsaw;
 var m_siteurl_jigsaw;
 var m_anchor_jigsaw;
+var m_doredirect;
+var m_mylink;
 
 
 function jigsaw_pictureChange() {
@@ -38,16 +40,16 @@ function jigsaw_rewriteFlashObject(sPic) {
 	s += "<param name='allowScriptAccess' value='sameDomain' />";
 	s += "<param name='allowFullScreen' value='false' />";
 	s += "<param name='movie' value='"+m_flash_jigsaw+"' />";
-	s += "<param name='flashvars' value='myPic=" + sPic + "&myRot=" + m_rotation_jigsaw + "&myThumbnail=" + m_preview_jigsaw+ "&myPieces=" + m_pieces_jigsaw+"&myRestart=" + m_showRestart_jigsaw+"&myGallery=" + m_showGallery_jigsaw+"' />";
+	s += "<param name='flashvars' value='myPic=" + sPic + "&myRot=" + m_rotation_jigsaw + "&myThumbnail=" + m_preview_jigsaw+ "&myPieces=" + m_pieces_jigsaw+"&myRestart=" + m_showRestart_jigsaw+"&myGallery=" + m_showGallery_jigsaw+"&myRedirect=" + m_doredirect+"&myLink=" + m_mylink+"' />";
 	s += "<param name='quality' value='high' />";
 	s += "<param name='menu' value='false' />";
 	s += "<param name='bgcolor' value='"+m_bgColor_jigsaw+"' />";
         s += "<param name='wmode' value='transparent' />";
-	s += "<embed src='"+m_flash_jigsaw+"' flashvars='myPic=" + sPic + "&myRot=" + m_rotation_jigsaw + "&myThumbnail=" + m_preview_jigsaw + "&myPieces=" + m_pieces_jigsaw+"&myRestart=" + m_showRestart_jigsaw+"&myGallery=" + m_showGallery_jigsaw+"' quality='high' bgcolor='"+m_bgColor_jigsaw+"'  swLiveConnect='true' ";
+	s += "<embed src='"+m_flash_jigsaw+"' flashvars='myPic=" + sPic + "&myRot=" + m_rotation_jigsaw + "&myThumbnail=" + m_preview_jigsaw + "&myPieces=" + m_pieces_jigsaw+"&myRestart=" + m_showRestart_jigsaw+"&myGallery=" + m_showGallery_jigsaw+"' quality='high' bgcolor='"+m_bgColor_jigsaw+"&myRedirect=" + m_doredirect+"&myLink=" + m_mylink+"'  swLiveConnect='true' ";
 	s += "    width='"+m_width_jigsaw+"' height='"+m_height_jigsaw+"' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	s += "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />";
 	s += "</object>";	     
-        s += "<div style='width:"+m_width_jigsaw+"px;text-align: right;font-size:12px;'><a href='http://mypuzzle.org/jigsaw/'>"+m_anchor_jigsaw+"</a> by mypuzzle.org</div>";
+        s += "<div style='width:"+m_width_jigsaw+"px;text-align: right;font-size:12px;'><a href='http://mypuzzle.org/jigsaw'>"+m_anchor_jigsaw+"</a> by mypuzzle.org</div>";
         e.innerHTML = s;
 }
 
@@ -91,6 +93,9 @@ function jigsaw_getFlashVars() {
     m_urlResizePath_jigsaw = jQuery('#var_resizePathUrl_jigsaw').text();
     m_siteurl_jigsaw = jQuery('#var_siteurl_jigsaw').text();
     m_anchor_jigsaw = jQuery('#var_anchor_jigsaw').text();
+    
+    m_doredirect = jQuery('#var_doredirect_jigsaw').text();
+    m_mylink = jQuery('#var_mylink_jigsaw').text();
     
 }
 

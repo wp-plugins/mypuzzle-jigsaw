@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: jigsaw, mypuzzle, puzzle, jigsaw puzzle, puzzle games, free jigsaw puzzle
 Requires at least: 2.5
 Tested up to: 3.4.2
-Stable tag: 1.3.1
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,3 +88,6 @@ Visit <a href="http://blog.mypuzzle.org/jigsaw-for-wordpress-plugin/">Wordpress 
 
  = 1.3.1 =
  * Finally fixed the option initialization
+
+ = 1.4.1 =
+ * Added finisher functionality to custom redirect on solved puzzle
